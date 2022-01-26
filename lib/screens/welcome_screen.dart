@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import './registration_screen.dart';
 import './login_screen.dart';
+import '../components/rounded_button.dart';
 
 class WelcomeScreen extends StatefulWidget {
-
   static const String id = 'welcome_screen';
 
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -12,7 +13,49 @@ class WelcomeScreen extends StatefulWidget {
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> {
+class _WelcomeScreenState extends State<WelcomeScreen>
+    with SingleTickerProviderStateMixin {
+  // AnimationController? controller;
+  // Animation? animation;
+  // double? animationVal = 0;
+  // Color animationColor = Colors.white;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // controller = AnimationController(
+    //   duration: Duration(seconds: 1),
+    //   vsync: this,
+    // );
+
+    // animation =
+    //     ColorTween(begin: Colors.cyan, end: Colors.white).animate(controller!);
+
+    // controller?.forward();
+
+    // animation?.addStatusListener((status) {
+    //   if(status==AnimationStatus.completed) {
+    //     controller?.reverse(from: 1);
+    //   } else if(status==AnimationStatus.dismissed) {
+    //     controller?.forward();
+    //   }
+    // });
+
+    // controller?.addListener(() {
+    //   setState(() {
+    //     animationColor = animation?.value;
+    //   });
+    //   print(animationColor);
+    // });
+  }
+
+  @override
+  void dispose() {
+    // controller?.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,15 +68,26 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           children: [
             Row(
               children: [
-                Container(
-                  child: Image.asset('images/logo.png'),
-                  height: 60,
+                Hero(
+                  tag: 'logo',
+                  child: Container(
+                    child: Image.asset('images/logo.png'),
+                    height: 60,
+                  ),
                 ),
-                Text(
-                  'Flash Chat_',
-                  style: TextStyle(
-                    fontSize: 45,
-                    fontWeight: FontWeight.w900,
+                SizedBox(
+                  // width: double.infinity,
+                  child: DefaultTextStyle(
+                    style: TextStyle(
+                      fontSize: 45,
+                      fontWeight: FontWeight.w900,
+                      // color: animationColor,
+                    ),
+                    child: AnimatedTextKit(
+                      animatedTexts: [
+                        TypewriterAnimatedText('Flash Chat'),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -41,42 +95,20 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             SizedBox(
               height: 45,
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: Material(
-                color: Colors.cyan,
-                elevation: 5,
-                borderRadius: BorderRadius.circular(60),
-                child: MaterialButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, LoginScreen.id);
-                  },
-                  minWidth: 200,
-                  height: 42,
-                  child: Text(
-                    'Log In',
-                  ),
-                ),
-              ),
+            RoundedButton(
+              colour: Colors.cyan,
+              onPressed: () {
+                Navigator.pushNamed(context, LoginScreen.id);
+              },
+              label: 'Log In',
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: Material(
-                color: Colors.cyan.shade800,
-                elevation: 5,
-                borderRadius: BorderRadius.circular(60),
-                child: MaterialButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, RegistrationScreen.id);
-                  },
-                  minWidth: 200,
-                  height: 42,
-                  child: Text(
-                    'Register',
-                  ),
-                ),
-              ),
-            )
+            RoundedButton(
+              colour: Colors.cyan.shade800,
+              onPressed: () {
+                Navigator.pushNamed(context, RegistrationScreen.id);
+              },
+              label: 'Register',
+            ),
           ],
         ),
       ),

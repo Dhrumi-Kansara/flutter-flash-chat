@@ -17,3 +17,29 @@ const kMessageContainerDecoration = BoxDecoration(
     top: BorderSide(color: Colors.cyan, width: 2.0),
   ),
 );
+
+const KRoundedTextFieldInputDecoration = const InputDecoration(
+  hintText: 'Enter this field',
+  contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+  border: OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(32)),
+  ),
+  enabledBorder: OutlineInputBorder(
+    borderSide: BorderSide(
+      color: Colors.cyan,
+      width: 1,
+    ),
+    borderRadius: BorderRadius.all(
+      Radius.circular(32),
+    ),
+  ),
+  focusedBorder: OutlineInputBorder(
+    borderSide: BorderSide(
+      color: Colors.cyan,
+      width: 2,
+    ),
+    borderRadius: BorderRadius.all(
+      Radius.circular(32),
+    ),
+  ),
+);

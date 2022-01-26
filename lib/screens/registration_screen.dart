@@ -1,119 +1,108 @@
 import 'package:flutter/material.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../constants.dart';
+import './chat_screen.dart';
+import '../components/rounded_button.dart';
 
 class RegistrationScreen extends StatefulWidget {
-
   static const String id = 'registration_screen';
 
-  const RegistrationScreen({ Key? key }) : super(key: key);
+  const RegistrationScreen({Key? key}) : super(key: key);
 
   @override
   _RegistrationScreenState createState() => _RegistrationScreenState();
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String email = "";
+  String password = "";
+  bool showSpinner = false;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              height: 200,
-              child: Image.asset('images/logo.png'),
-            ),
-            SizedBox(
-              height: 40,
-            ),
-            TextField(
-              onChanged: (value) {
-                //Do something with the user input.
-              },
-              decoration: InputDecoration(
-                hintText: 'Enter your email',
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(32)),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.cyan,
-                    width: 1,
-                  ),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(32),
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.cyan,
-                    width: 2,
-                  ),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(32),
-                  ),
+    return ModalProgressHUD(
+      inAsyncCall: showSpinner,
+      child: Scaffold(
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Hero(
+                tag: 'logo',
+                child: Container(
+                  height: 200,
+                  child: Image.asset('images/logo.png'),
                 ),
               ),
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            TextField(
-              onChanged: (value) {
-                //Do something with the user input.
-              },
-              decoration: const InputDecoration(
-                hintText: 'Enter your password',
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(32)),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.cyan,
-                    width: 1,
-                  ),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(32),
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.cyan,
-                    width: 2,
-                  ),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(32),
-                  ),
-                ),
+              SizedBox(
+                height: 40,
               ),
-            ),
-            SizedBox(
-              height: 24,
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: Material(
-                color: Colors.cyan.shade700,
-                elevation: 5,
-                borderRadius: BorderRadius.circular(60),
-                child: MaterialButton(
-                  onPressed: () {
-                    //Go to login screen.
-                  },
-                  minWidth: 200,
-                  height: 42,
-                  child: Text(
-                    'Register',
-                  ),
+              TextField(
+                onChanged: (value) {
+                  email = value;
+                },
+                decoration: KRoundedTextFieldInputDecoration.copyWith(
+                  hintText: 'Enter your email',
                 ),
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.emailAddress,
               ),
-            ),
-          ],
+              SizedBox(
+                height: 15,
+              ),
+              TextField(
+                onChanged: (value) {
+                  password = value;
+                },
+                decoration: KRoundedTextFieldInputDecoration.copyWith(
+                  hintText: 'Enter your password',
+                ),
+                textAlign: TextAlign.center,
+                obscureText: true,
+              ),
+              SizedBox(
+                height: 24,
+              ),
+              RoundedButton(
+                colour: Colors.cyan.shade800,
+                onPressed: () async {
+                  if (email != "" && password != "") {
+                    setState(() {
+                      showSpinner = true;
+                    });
+                    try {
+                      UserCredential newUser =
+                          await _auth.createUserWithEmailAndPassword(
+                        email: email,
+                        password: password,
+                      );
+
+                      if (newUser != null) {
+                        Navigator.pushNamed(context, ChatScreen.id);
+                      }
+
+                      setState(() {
+                        showSpinner = false;
+                      });
+                    } on FirebaseAuthException catch (e) {
+                      if (e.code == 'weak-password') {
+                        print('The password provided is too weak.');
+                      } else if (e.code == 'email-already-in-use') {
+                        print('The account already exists for that email.');
+                      }
+                    } catch (e) {
+                      print(e);
+                    }
+                  }
+                },
+                label: 'Register',
+              ),
+            ],
+          ),
         ),
       ),
     );
