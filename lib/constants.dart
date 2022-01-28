@@ -43,3 +43,15 @@ const KRoundedTextFieldInputDecoration = const InputDecoration(
     ),
   ),
 );
+
+BorderRadius kLeftBubbleBorderRadius = BorderRadius.only(
+  topRight: Radius.circular(30),
+  bottomLeft: Radius.circular(30),
+  bottomRight: Radius.circular(30),
+);
+
+BorderRadius kRightBubbleBorderRadius = BorderRadius.only(
+  topLeft: Radius.circular(30),
+  bottomLeft: Radius.circular(30),
+  bottomRight: Radius.circular(30),
+);

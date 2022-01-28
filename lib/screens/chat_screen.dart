@@ -28,29 +28,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
 
-    getCurrentUser();
-  }
-
-  void getCurrentUser() async {
-    try {
-      var currentUser = FirebaseAuth.instance.currentUser;
-      // print('--->>> current user: $currentUser');
-      if (currentUser != null) {
-        user = currentUser;
-        print(user?.email);
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  void messageStream() async {
-    await for (var snapshot in _firestore.collection('messages').snapshots()) {
-      for (var message in snapshot.docs) {
-        print(message.data());
-      }
-    }
-  }
+  } 
 
   @override
   Widget build(BuildContext context) {
@@ -98,6 +76,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         _firestore.collection('messages').add({
                           'text': message,
                           'sender': user?.email,
+                          "timestamp": Timestamp.now()
                         });
                       }
                     },
@@ -124,7 +103,7 @@ class MessageStream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _firestore.collection('messages').snapshots(),
+      stream: _firestore.collection('messages').orderBy('timestamp' ,descending :false).snapshots(),
       builder: (context, AsyncSnapshot snapshot) {
         if (!snapshot.hasData) {
           return Center(
@@ -134,7 +113,7 @@ class MessageStream extends StatelessWidget {
           );
         }
 
-        final messages = snapshot.data.docs;
+        final messages = snapshot.data.docs.reversed;
         List<MessageBubble> messageBubbles = [];
 
         for (var message in messages) {
@@ -143,14 +122,16 @@ class MessageStream extends StatelessWidget {
 
           final messageWidget = MessageBubble(
             text: messageText != null ? messageText : "",
-            sender: messageSender,
-            CurrentUserEmail: currentUserEmail,
+            sender: messageSender, 
+            isSenderCurrentUser: currentUserEmail == messageSender
+            
           );
 
           messageBubbles.add(messageWidget);
         }
         return Expanded(
           child: ListView(
+            reverse: true,
             padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
             children: messageBubbles,
           ),
